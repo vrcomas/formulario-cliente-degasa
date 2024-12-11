@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Registro de Cliente</title>
+    <style>
+        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .horario-container { display: flex; justify-content: space-between; gap: 10px; }
+        .horario-container input { width: 48%; }
+        button { background-color: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; width: 100%; }
+        button:hover { background-color: #45a049; }
+        #respuesta { text-align: center; font-weight: bold; color: green; margin-top: 15px; }
+        .ubicacion-btn { background-color: #4285F4; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Formulario de Registro de Cliente</h2>
+        <form id="formulario">
+            <label>Número de cliente</label><input type="text" name="numero_cliente" required>
+            <label>Razón Social</label><input type="text" name="razon_social" required>
+            <label>Estado</label><input type="text" name="estado">
+            <label>Población</label><input type="text" name="poblacion">
+            <label>Días de recibo</label><input type="text" name="dias_recibo">
+            
+            <label>Horario de recibo</label>
+            <div class="horario-container">
+                <input type="time" name="horario_recibo_inicio" required>
+                <input type="time" name="horario_recibo_fin" required>
+            </div>
+
+            <label>Acepta BO</label>
+            <select name="acepta_bo">
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+            </select>
+
+            <label>Orden de compra</label>
+            <select name="orden_compra">
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+            </select>
+
+            <label>Certificados</label>
+            <select name="certificados">
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+            </select>
+
+            <label>Cita</label>
+            <select name="cita">
+                <option value="Sí">Sí</option>
+                <option value="No">No</option>
+            </select>
+
+            <label>Contactos para citas o información</label><input type="text" name="contactos_cita">
+            <label>Teléfono</label><input type="tel" name="telefono">
+            <label>Comentarios Adicionales</label><textarea name="comentarios"></textarea>
+            <label>Requerimientos de entrega</label><textarea name="requerimientos"></textarea>
+            <label>Contacto o responsable de entregas</label><input type="text" name="contacto_responsable">
+
+            <label>Ubicación</label>
+            <input type="text" id="ubicacion" name="ubicacion" readonly>
+            <button type="button" class="ubicacion-btn" onclick="obtenerUbicacion()">Obtener Ubicación</button>
+
+            <button type="submit">Enviar</button>
+        </form>
+        <p id="respuesta"></p>
+    </div>
+
+    <script>
+        function obtenerUbicacion() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    const url = `https://www.google.com/maps?q=${lat},${lon}`;
+                    document.getElementById('ubicacion').value = url;
+                }, () => {
+                    alert('No se pudo obtener la ubicación.');
+                });
+            } else {
+                alert('La geolocalización no es soportada por este navegador.');
+            }
+        }
+
+        document.getElementById('formulario').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch('https://script.google.com/macros/s/AKfycbxqmtZWOtOMdhvrQ6NVF4KmIHBvxtznC-B4S149SHnKSCPpO6SDLcWYcwDolKaaJIxK/exec', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                document.getElementById('respuesta').textContent = "Formulario enviado";
+                setTimeout(() => {
+                    location.reload();
+                }, 3000); // Recarga la página después de 3 segundos
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('respuesta').textContent = 'Hubo un error al enviar el formulario.';
+                document.getElementById('respuesta').style.color = 'red';
+            });
+        });
+    </script>
+</body>
+</html>
