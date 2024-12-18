@@ -1,114 +1,165 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulario de Registro de Cliente</title>
-    <style>
-        body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
-        .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
-        label { display: block; margin-bottom: 5px; font-weight: bold; }
-        input, select, textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
-        .horario-container { display: flex; justify-content: space-between; gap: 10px; }
-        .horario-container input { width: 48%; }
-        button { background-color: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; width: 100%; }
-        button:hover { background-color: #45a049; }
-        #respuesta { text-align: center; font-weight: bold; color: green; margin-top: 15px; }
-        .ubicacion-btn { background-color: #4285F4; margin-bottom: 15px; }
-    </style>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Formulario de Registro de Cliente</title>
+<style>
+    body { font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px; }
+    .container { max-width: 600px; margin: auto; background: #fff; padding: 20px; border-radius: 10px; }
+    label { display: block; margin-bottom: 5px; font-weight: bold; }
+    input, select, textarea { width: 100%; padding: 8px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 5px; }
+    .horario-container { display: flex; justify-content: space-between; gap: 10px; }
+    .horario-container input { width: 48%; }
+    button { background-color: #4CAF50; color: white; padding: 10px; border: none; cursor: pointer; width: 100%; }
+    button:hover { background-color: #45a049; }
+    #respuesta { text-align: center; font-weight: bold; color: green; margin-top: 15px; }
+    #map { height: 300px; width: 100%; margin-bottom: 15px; }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h2>Formulario de Registro de Cliente</h2>
-        <form id="formulario">
-            <label>Número de cliente</label><input type="text" name="numero_cliente" required>
-            <label>Razón Social</label><input type="text" name="razon_social" required>
-            <label>Estado</label><input type="text" name="estado">
-            <label>Población</label><input type="text" name="poblacion">
-            <label>Días de recibo</label><input type="text" name="dias_recibo">
-            
-            <label>Horario de recibo</label>
-            <div class="horario-container">
-                <input type="time" name="horario_recibo_inicio" required>
-                <input type="time" name="horario_recibo_fin" required>
-            </div>
+<div class="container">
+<h2>Formulario de Registro de Cliente</h2>
 
-            <label>Acepta BO</label>
-            <select name="acepta_bo">
-                <option value="Sí">Sí</option>
-                <option value="No">No</option>
-            </select>
+<form action="https://script.google.com/macros/s/AKfycbzTYqoHk_eyKwBM5SvDqMjBVraQJPnqYF3KmAo0MSfH3YDC_Tbiv5pmXpz9BozpM3y0/exec" 
+      id="formulario" method="POST" onsubmit="prepararDatos(); mostrarMensajeEnviado();">
 
-            <label>Orden de compra</label>
-            <select name="orden_compra">
-                <option value="Sí">Sí</option>
-                <option value="No">No</option>
-            </select>
+    <label>Número de cliente</label>
+    <input name="número_de_cliente" type="text"/>
 
-            <label>Certificados</label>
-            <select name="certificados">
-                <option value="Sí">Sí</option>
-                <option value="No">No</option>
-            </select>
+    <label>Razón Social</label>
+    <input name="razón_social" type="text"/>
 
-            <label>Cita</label>
-            <select name="cita">
-                <option value="Sí">Sí</option>
-                <option value="No">No</option>
-            </select>
+    <label>Estado</label>
+    <input name="estado" type="text"/>
 
-            <label>Contactos para citas o información</label><input type="text" name="contactos_cita">
-            <label>Teléfono</label><input type="tel" name="telefono">
-            <label>Comentarios Adicionales</label><textarea name="comentarios"></textarea>
-            <label>Requerimientos de entrega</label><textarea name="requerimientos"></textarea>
-            <label>Contacto o responsable de entregas</label><input type="text" name="contacto_responsable">
+    <label>Población</label>
+    <input name="población" type="text"/>
 
-            <label>Ubicación</label>
-            <input type="text" id="ubicacion" name="ubicacion" readonly>
-            <button type="button" class="ubicacion-btn" onclick="obtenerUbicacion()">Obtener Ubicación</button>
+    <label>Días de recibo</label>
+    <input name="días_de_recibo" type="text"/>
 
-            <button type="submit">Enviar</button>
-        </form>
-        <p id="respuesta"></p>
+    <label>Horario de recibo</label>
+    <div class="horario-container">
+        <input id="horario_inicio" name="horario_recibo_inicio" required="True" type="time"/>
+        <input id="horario_fin" name="horario_recibo_fin" required="True" type="time"/>
+        <input type="hidden" id="horario_completo" name="horario_recibo"/>
     </div>
 
-    <script>
-        function obtenerUbicacion() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(position => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-                    const url = `https://www.google.com/maps?q=${lat},${lon}`;
-                    document.getElementById('ubicacion').value = url;
-                }, () => {
-                    alert('No se pudo obtener la ubicación.');
-                });
-            } else {
-                alert('La geolocalización no es soportada por este navegador.');
-            }
-        }
+    <label>Acepta BO</label>
+    <select name="acepta_bo">
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+    </select>
 
-        document.getElementById('formulario').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const formData = new FormData(this);
+    <label>Requiere orden de compra en la entrega</label>
+    <select name="orden_compra">
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+    </select>
 
-            fetch('https://script.google.com/macros/s/AKfycbxqmtZWOtOMdhvrQ6NVF4KmIHBvxtznC-B4S149SHnKSCPpO6SDLcWYcwDolKaaJIxK/exec', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.text())
-            .then(data => {
-                document.getElementById('respuesta').textContent = "Formulario enviado";
-                setTimeout(() => {
-                    location.reload();
-                }, 3000); // Recarga la página después de 3 segundos
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                document.getElementById('respuesta').textContent = 'Hubo un error al enviar el formulario.';
-                document.getElementById('respuesta').style.color = 'red';
-            });
+    <label>Requiere Certificados en la entrega</label>
+    <select name="certificados">
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+    </select>
+
+    <label>Se necesita agendar cita</label>
+    <select name="cita">
+        <option value="Sí">Sí</option>
+        <option value="No">No</option>
+    </select>
+
+    <label>Contactos para citas o información</label>
+    <input name="contactos_citas" type="text"/>
+
+    <label>Teléfono</label>
+    <input name="teléfono" type="text"/>
+
+    <label>Comentarios Adicionales</label>
+    <textarea name="comentarios_adicionales"></textarea>
+
+    <label>Requerimientos de entrega</label>
+    <textarea name="requerimientos_de_entrega"></textarea>
+
+    <label>Contacto o responsable de entregas</label>
+    <input name="contacto_o_responsable_de_entregas" type="text"/>
+
+    <p style="font-weight: bold; color: #d9534f; margin-top: 20px;">Facturación</p>
+
+    <label>Método de pago requerido</label>
+    <input name="método_de_pago_requerido" required="True" type="text"/>
+
+    <label>Forma de pago</label>
+    <input name="forma_de_pago" required="True" type="text"/>
+
+    <label>Uso de CFDI</label>
+    <input name="uso_de_cfdi" required="True" type="text"/>
+
+    <label>Ubicación</label>
+    <input id="ubicacion" name="ubicacion" placeholder="Escribe una dirección" required="True" type="text"/>
+    <div id="map"></div>
+    <button type="button" onclick="confirmarUbicacion()">Confirmar Ubicación</button>
+
+    <button type="submit">Enviar</button>
+</form>
+
+<p id="respuesta"></p>
+</div>
+
+<script>
+    let map;
+    let marker;
+    let geocoder;
+    let autocomplete;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 19.4326, lng: -99.1332 },
+            zoom: 12
         });
-    </script>
+
+        marker = new google.maps.Marker({
+            map: map,
+            draggable: true
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        initAutocomplete();
+    }
+
+    function initAutocomplete() {
+        autocomplete = new google.maps.places.Autocomplete(document.getElementById('ubicacion'), {
+            types: ['geocode']
+        });
+
+        autocomplete.addListener('place_changed', () => {
+            const place = autocomplete.getPlace();
+            if (place.geometry) {
+                map.setCenter(place.geometry.location);
+                marker.setPosition(place.geometry.location);
+            }
+        });
+    }
+
+    function confirmarUbicacion() {
+        const position = marker.getPosition();
+        document.getElementById('ubicacion').value = `https://www.google.com/maps?q=${position.lat()},${position.lng()}`;
+    }
+
+    function prepararDatos() {
+        const horarioInicio = document.getElementById('horario_inicio').value;
+        const horarioFin = document.getElementById('horario_fin').value;
+        const horarioCompleto = `${horarioInicio} a ${horarioFin}`;
+        document.getElementById('horario_completo').value = horarioCompleto;
+    }
+
+    function mostrarMensajeEnviado() {
+        alert('Formulario enviado correctamente');
+    }
+</script>
+
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA06F7-_ZI9Lq3MZpXvWhl19CzOuvWaOHI&libraries=places&callback=initMap"></script>
 </body>
 </html>
