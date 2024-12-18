@@ -15,11 +15,14 @@
     button:hover { background-color: #45a049; }
     #respuesta { text-align: center; font-weight: bold; color: green; margin-top: 15px; }
     #map { height: 300px; width: 100%; margin-bottom: 15px; }
+    .notice { font-size: 14px; color: #d9534f; margin-bottom: 20px; font-weight: bold; }
 </style>
 </head>
 <body>
 <div class="container">
 <h2>Formulario de Registro de Cliente</h2>
+
+<p class="notice">Si maneja más de una ubicación, por favor complete este formulario varias veces, modificando el Estado y la Población para cada una.</p>
 
 <form action="https://script.google.com/macros/s/AKfycbzTYqoHk_eyKwBM5SvDqMjBVraQJPnqYF3KmAo0MSfH3YDC_Tbiv5pmXpz9BozpM3y0/exec" 
       id="formulario" method="POST" onsubmit="prepararDatos(); mostrarMensajeEnviado();">
